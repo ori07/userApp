@@ -1,8 +1,17 @@
-<?php
+<?php declare(strict_types = 1);
+
+return [
+    ['GET', '/hello-world', function () {
+        echo 'Hello World';
+    }],
+    ['GET', '/another-route', function () {
+        echo 'This works too';
+    }],
+];
   //Define a few globally available configuration things
   //Auto-load our files
   //Route our app to the appropriate Controller
-  namespace wwwProject\userApp\public\app;
+  /*namespace wwwProject\userApp\public\app;
   define('BASE', __DIR__);
   define('BASE_URI', 'http://MyApp.co');
   define('ASSETS_URI', 'http://MyApp.co');
@@ -59,7 +68,7 @@
           break;
   }
 
-  echo $buff->out(); 
+  echo $buff->out(); */
 
   /*function call($controller, $action) {
     // require the file that matches the controller name
