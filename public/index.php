@@ -1,5 +1,8 @@
 <?php
-  require_once('connection.php');
+declare(strict_types = 1); 
+
+require __DIR__ . '/../src/configuration/Bootstrap.php';
+/*  require_once('connection.php');
 
 
   if (isset($_GET['controller']) && isset($_GET['action'])) {
@@ -11,5 +14,5 @@
   }
 
   require_once('views/layout.php');
-
+*/
 ?>

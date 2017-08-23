@@ -2,7 +2,7 @@
   //Define a few globally available configuration things
   //Auto-load our files
   //Route our app to the appropriate Controller
-  namespace wwwProject\userApp;
+  namespace wwwProject\userApp\public\app;
   define('BASE', __DIR__);
   define('BASE_URI', 'http://MyApp.co');
   define('ASSETS_URI', 'http://MyApp.co');
@@ -10,7 +10,7 @@
 
   //load all our classes as we instantiate them following the guidance of the name spaces.
   spl_autoload_register(function($class) {
-      require_once __DIR__ . str_replace(['wwwProject\\userApp', '\\'], ['', '/'], $class) . '.php';
+      require_once __DIR__ . str_replace(['wwwProject\\userApp\\public\\app', '\\'], ['', '/'], $class) . '.php';
   });
   
   // include the composer autoloader
@@ -19,7 +19,49 @@
   $req = $_SERVER['REQUEST_URI'];
   $qs = $_SERVER['QUERY_STRING'];
 
-  function call($controller, $action) {
+  // include the composer autoloader
+  require 'vendor/autoload.php';
+
+  $req = $_SERVER['REQUEST_URI'];
+  $qs = $_SERVER['QUERY_STRING'];
+  
+  // this is our pseudo-router ... we don't have a set of classes that interpret requests so we just rely on the plain old super globals
+
+  if(!empty($qs)) {
+      $req = substr($req, 0, strpos($req, '?')); // this is to be expanded by you guys...
+  }
+
+  switch ($req) {
+      case ('/'):
+          $buff = new Controllers\HomeController([ 
+              BASE . '/Views/pages/login.php'
+          ]);
+          break;
+      case ('/page_1'):
+          $buff = new Controllers\PagesController([ 
+              BASE . '/Views/users/page_1.php'
+          ]);
+          break;
+      case ('/page_2'):
+          $buff = new Controllers\PagesController([ 
+              BASE . '/Views/users/page_2.php'
+          ]);
+          break;
+      case ('/page_3'):
+          $buff = new Controllers\PagesController([ 
+              BASE . '/Views/users/page_3.php'
+          ]);
+          break;
+      default:
+          $buff = new Controllers\DefaultController([ 
+              BASE . '/Views/pages/login.php'
+          ]);
+          break;
+  }
+
+  echo $buff->out(); 
+
+  /*function call($controller, $action) {
     // require the file that matches the controller name
     require_once('Controllers/' . $controller . '_controller.php');
 
@@ -55,5 +97,5 @@
     }
   } else {
     call('pages', 'error');
-  }
+  }*/
 ?>
