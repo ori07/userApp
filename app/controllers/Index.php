@@ -10,7 +10,6 @@
 
 		public function index(){
 			$this->view->render($this, 'index');
-			//var_dump($this->view);
 		}
 	}
 ?>

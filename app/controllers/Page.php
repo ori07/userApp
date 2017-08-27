@@ -9,16 +9,17 @@
 		}
 
 		function page(){
-			// $user_name = Session::getSession('user');
+			$user_name = Session::getSession('user');
 
-			// if ($user_name != "") {
-			//this->view->render($this,'page');
-			// }else{
-			// 	header("Location:".URL);
-			// }
+			if ($user_name != "") {
+				$this->view->render($this,'page');
+			}else{
+				$login = substr(URL, 0, -1);
+				header("Location:".$login);
+			}
 			//phpinfo();
 			//echo "Inicio sesion de usuario";
-			$this->view->render($this, 'page');
+			//$this->view->render($this, 'page');
 		}
 	}
 ?>

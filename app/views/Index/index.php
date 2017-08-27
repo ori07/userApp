@@ -3,7 +3,7 @@
      	<form id="login_form" name="login_form" method="POST">
 	        <input type="text" name="user_name" id="user_name" placeholder="Username" /><br>
 	        <input type="password" name="password" id="password" placeholder="Password" /><br>
-	        <input type="button" name="login_btn" id="login_btn" value="Login" />
+	        <input type="submit" name="login_btn" id="login_btn" value="Login" />
       	</form>
      </div>
      <script>
@@ -17,6 +17,8 @@
               var pass = $('form[name=login_form] input[name=password]')[0].value;
               var url_user = "<?php echo URL;?>User/userLogin";
               var url_page = "<?php echo URL;?>Page/page";
+
+              //Prevent to login without data in form
               if (user == "" || pass == "") {
 
               }else{

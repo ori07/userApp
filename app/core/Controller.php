@@ -9,7 +9,7 @@
 	class Controller{
 
 		function __construct(){
-			//Session::start();
+			Session::start();
 			$this->loadClassModel(); 
 			$this->view = new View();
 		}

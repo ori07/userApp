@@ -5,7 +5,7 @@
 	class View {
 		
 		function __construct(){
-			//echo "Soy la clase controladora de las vistas ";
+			//echo "Main view controller";
 		}
 
 		function render($controller, $view){
