@@ -9,15 +9,16 @@
 	class Controller{
 
 		function __construct(){
+			//Session::start();
 			$this->loadClassModel(); 
-			echo "Soy el controlador de controladores ;";
+			$this->view = new View();
 		}
 
 		function loadClassModel(){
 			$model = get_class($this).'_model';
 			$path = '../app/models/'.$model.'.php';
 			if (file_exists($path)) {
-				require_once $path;
+				require $path;
 				$this->model = new $model();
 			}
 		}
