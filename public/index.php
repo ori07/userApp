@@ -35,13 +35,26 @@ if (file_exists($controller_path)) {
 		if (method_exists($controller, $method)) {
 			$controller->{$method}();
 		}else{
-			echo "Method doesn't exist";
+			header("HTTP/1.1 404 Not Found");
+			$user_name = Session::getSession('user');
+			if ($user_name !== "") {
+				$last_page = Session::getSession('lastPage');
+				header("Location:".URL.$last_page);
+			}else{
+				$login = substr(URL, 0, -1);
+				header("Location:".$login);
+			}
+			
 		}
 	}
 
 }else{
-	echo "Wrong address, the controller doesn't exist";
-	//Todo redirigir al index
+	$user_name = Session::getSession('user');
+	if ($user_name == "") {
+		$login = substr(URL, 0, -1);
+		header("Location:".$login);
+		echo 'alert("You must login, please")';
+	}
 }
 //print($controller_path)
 //$app = new App;

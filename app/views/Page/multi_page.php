@@ -1,5 +1,5 @@
 <?php 
-		$role = Session::getSession('role');
+	$role = Session::getSession('role');
 	foreach ($role as $value) {
 		if ($value == "PAGE_1") {
 			echo "<a href=".URL."Page_1/page_1>Page 1</a> <br>";
@@ -11,5 +11,6 @@
 			echo "<a href=".URL."Page/page>ADMIN</a><br>";
 		}
 	}
-	
+
+
 ?>
