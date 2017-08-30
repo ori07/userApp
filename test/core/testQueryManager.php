@@ -43,6 +43,12 @@
 
 		}
 
+		function createUser(){
+			$this->setUp()
+			$this->connection = $this->getMySqlConnection();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
+		}
+
 		function testInsertTableUser(){
 			$this->connection = $this->getMySqlConnection();
 			$this->setUp();
@@ -54,19 +60,17 @@
 
 		function testInsertTableRole(){
 			$connection = $this->getMySqlConnection();
-			$this->setUp();
-			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
+			$this->createUser();
 			$result = $this->connection->insert($this->table_role, $this->data_arrayR);
 			$this->connection->clearDataBase();
 			$this->assertTrue($result);
 
 		}
 
-		/*function testUpdateTableUser(){
+		function testUpdateTableUser(){
 			$this->connection = $this->getMySqlConnection();
-			$this->setUp();	
+			$this->createUser();	
 			$update_array['user_name'] = 'user_new';
-			//$last_id = $this->connection->getInsertedId();
 			$last_id = 1;
 			$where = "_id='".$last_id."'";
 			$result = $this->connection->update($this->table_user, $update_array,$where);
@@ -75,7 +79,7 @@
 			//$this->connection->clearDataBase();
 			//$this->assertEquals(null, $result);
 
-		}*/
+		}
 
 	
 
