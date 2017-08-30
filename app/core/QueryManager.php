@@ -68,11 +68,13 @@
  		//Creating the update statement
  		$stmt = "UPDATE ".$table." SET".$values." WHERE ".$where.";";
  		$result = $this->link->query($stmt) or die($this->link->error); 
+ 		return true;
 
 	 } 
 
 	 function delete($table, $where){
 	 	//Creating the delete statement
  		$stmt = "DELETE FROM ".$table." WHERE ".$where.";";
+ 		return true;
 	 }
 ?>
