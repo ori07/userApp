@@ -110,6 +110,49 @@
 			$this->connection->clearDataBase();
 			$this->assertTrue($result);
 		}
+
+		function testSelectConditional(){
+			$this->connection = $this->getMySqlConnection();
+			$this->setUp();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
+			$result = $this->connection->insert($this->table_role, $this->data_arrayR);
+			//Parameters for query	
+			$attr = '*';
+			$last_id = 1;
+			$where = "_id='".$last_id."'";
+
+			//Expected response
+			$array['_id']  = "1";
+			$array['role']  = "role_1";
+			$array['user_id']  = "1";
+			$expected_result = [$array];
+
+			$result = $this->connection->selectConditional($attr, $this->table_role, $where);
+			$this->connection->clearDataBase();
+			$this->assertEquals($expected_result, $result);
+
+		}
+
+		function testSelectAll(){
+			$this->connection = $this->getMySqlConnection();
+			$this->setUp();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
+			$result = $this->connection->insert($this->table_role, $this->data_arrayR);
+
+			//Expected response
+			$array1['_id']  = "1";
+			$array1['role']  = "role_1";
+			$array1['user_id']  = "1";
+
+			$array2['_id']  = "2";
+			$array2['role']  = "role_2";
+			$array2['user_id']  = "1";
+			$expected_result = [$array1, $array2];
+
+			$result = $this->connection->selectAll($this->table_role);
+			$this->assertEquals($expected_result, $result);
+
+		}
 		
 	}
 

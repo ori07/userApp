@@ -57,8 +57,9 @@
 
 		}
 
-		//Create User
+		//Create Role
 		function addRole($user, $role){
+			//TODO: consider many roles
 			if (isset($_POST['user_id']) && isset($_POST['role'])){
 				$array['user_id'] = $_POST['user_id'];
 				$array['role'] = $_POST['role'];
@@ -97,7 +98,7 @@
 		function deleteRole(){
 			if (isset($_POST['_id'])){
 				$where = "_id='".$_POST['_id']."'";
-				$this->model->deletePost($where);
+				$this->model->deleteRole($where);
 			}
 		}
 	}
