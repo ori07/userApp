@@ -9,6 +9,29 @@
      	*/
 	 	private $link;
 
+	 	private function createTuples($columns_data){
+	 		$keys=array_keys($columns_data);
+	 		$length = count($columns_data[$keys[0]]);
+	 		$values = null;
+	 		for ($i = 0; $i < $length; $i++) {
+	 			if ($i >0) {
+	 				$v = "(";
+	 			}else{
+	 				$v=null;
+	 			}
+	 			
+	 			foreach ($keys as $value) {
+	 				$v.= '"'.$columns_data[$value][$i].'",';
+	 			}
+	 			$v = substr($v, 0,-1);
+	 			$v.= ")";
+	 			$values.= $v.",";
+	 		}
+	 		$values = substr($values, 0,-1);
+	 		return $values;
+
+	 	}
+
 	 	/**
 	 	* Function to connect to mysql database
 	 	*/
@@ -46,8 +69,16 @@
 	 		$values = null;
 	 		//creating the Into closure
 	 		foreach ($columns as $key => $value) {
-	 			$cols.= $key.',';
-	 			$values.= '"'.$value.'",';
+	 			//check if is a string or an array
+	 			if (is_array($value)){
+
+	 				$cols.= $key.',';
+	 				$values = $this->createTuples($columns);
+	 			}else{
+	 				$cols.= $key.',';
+	 				$values.= '"'.$value.'",';
+	 			}
+	 			
 	 		}
 	 		//Deleting the last character
 	 		$cols = substr($cols, 0, -1);
@@ -87,9 +118,8 @@
 	 		$values = substr($values, 0,-1);
 
 	 		//Creating the update statement
-	 		$stmt = "UPDATE ".$table." SET".$values." WHERE ".$where.";";
+	 		$stmt = "UPDATE ".$table." SET ".$values." WHERE ".$where.";";
 	 		$result = $this->link->query($stmt) or die($this->link->error); 
-	 		var_dump($result);
 	 		return true;
 
 		 } 
@@ -100,6 +130,7 @@
 		 function delete($table, $where){
 		 	//Creating the delete statement
 	 		$stmt = "DELETE FROM ".$table." WHERE ".$where.";";
+	 		$result = $this->link->query($stmt) or die($this->link->error); 
 	 		return true;
 		 }
 
@@ -115,9 +146,6 @@
 
 		 }
 
-		 function getInsertedId(){
-		 	return $this->link->insert_id;
-		 }
 	 }
 
 

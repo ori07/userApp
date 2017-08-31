@@ -22,8 +22,8 @@
 			$this->data_arrayU['password'] = "pass_user1";
 			$this->table_user = 'user';
 			$this->table_role = 'role';
-			$this->data_arrayR['role'] = "role_1";
-			$this->data_arrayR['user_id'] = "1";
+			$this->data_arrayR['role'] = ["role_1", "role_2"];
+			$this->data_arrayR['user_id'] = ["1", "1"];
 		}
 
 		function testMySqlDBConnection(){
@@ -39,14 +39,6 @@
 			}else{
 				return null;
 			}
-			
-
-		}
-
-		function createUser(){
-			$this->setUp()
-			$this->connection = $this->getMySqlConnection();
-			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
 		}
 
 		function testInsertTableUser(){
@@ -60,7 +52,8 @@
 
 		function testInsertTableRole(){
 			$connection = $this->getMySqlConnection();
-			$this->createUser();
+			$this->setUp();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
 			$result = $this->connection->insert($this->table_role, $this->data_arrayR);
 			$this->connection->clearDataBase();
 			$this->assertTrue($result);
@@ -69,20 +62,54 @@
 
 		function testUpdateTableUser(){
 			$this->connection = $this->getMySqlConnection();
-			$this->createUser();	
+			$this->setUp();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);	
 			$update_array['user_name'] = 'user_new';
 			$last_id = 1;
 			$where = "_id='".$last_id."'";
-			$result = $this->connection->update($this->table_user, $update_array,$where);
-			print($result);
-			//$this->assertTrue($result);
-			//$this->connection->clearDataBase();
-			//$this->assertEquals(null, $result);
+			$result = $this->connection->update($this->table_user, $update_array, $where);
+			$this->connection->clearDataBase();
+			$this->assertTrue($result);
+			
 
 		}
 
-	
+		function testUpdateTableRole(){
+			$this->connection = $this->getMySqlConnection();
+			$this->setUp();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
+			$result = $this->connection->insert($this->table_role, $this->data_arrayR);	
+			$update_array['role'] = 'new_role';
+			$last_id = 1;
+			$where = "_id='".$last_id."'";
+			$result = $this->connection->update($this->table_role, $update_array, $where);
+			$this->assertTrue($result);
+			$this->connection->clearDataBase();
+		}
 
+		function testDeleteTableUser(){
+			$this->connection = $this->getMySqlConnection();
+			$this->setUp();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
+			$result = $this->connection->insert($this->table_role, $this->data_arrayR);	
+			$last_id = 1;
+			$where = "_id='".$last_id."'";
+			$result = $this->connection->delete($this->table_user, $where);
+			$this->connection->clearDataBase();
+			$this->assertTrue($result);
+		}
+
+		function testDeleteTableRole(){
+			$this->connection = $this->getMySqlConnection();
+			$this->setUp();
+			$result = $this->connection->insert($this->table_user, $this->data_arrayU);
+			$result = $this->connection->insert($this->table_role, $this->data_arrayR);	
+			$last_id = 1;
+			$where = "_id='".$last_id."'";
+			$result = $this->connection->delete($this->table_user, $where);
+			$this->connection->clearDataBase();
+			$this->assertTrue($result);
+		}
 		
 	}
 
