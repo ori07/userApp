@@ -151,6 +151,7 @@
 
 			$result = $this->connection->selectAll($this->table_role);
 			$this->assertEquals($expected_result, $result);
+			$this->connection->clearDataBase();
 
 		}
 		

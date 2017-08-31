@@ -1,11 +1,14 @@
 <?php 
 /**
 * 
-*/
+*/	
+	require "../rest/Rest.php";
+
 	class User extends Controller{
 		
 		function __construct(){
 			parent::__construct();
+			$this->rest = new Rest();
 		}
 
 		//Validate the user and password exist in db
@@ -48,11 +51,31 @@
 		}
 
 		//Create User
-		function createUser(){
+		function create(){
+			// Cross validation if the request method is POST else it will return "Not Acceptable" status
+			if($this->rest->get_request_method() != "POST"){
+				$this->rest->response('',406);
+			}
 			if (isset($_POST['user_name']) && isset($_POST['password'])){
 				$array['user_name'] = $_POST['user_name'];
 				$array['password'] = $_POST['password'];
-				$this->model->registerUser($array);
+				$result = $this->model->registerUser($array);
+				if ($result) {
+					$response_array['status']='success';
+					$response_array['message']='register successfully.';
+					$response_array['data']=$this->model->getLastInserted();
+					$this->rest->response($this->rest->json($response_array), 200);
+				}else{
+					$response_array['status']='fail';
+					$response_array['message']='invalid username or password.';
+					$response_array['data']='';
+					$this->response($this->json($response_array),400);
+				}
+			}else{
+				$response_array['status']='fail';
+				$response_array['message']='invalid username or password.';
+				$response_array['data']='';
+				$this->rest->response($this->rest->json($response_array),400);
 			}
 
 		}
@@ -101,6 +124,8 @@
 				$this->model->deleteRole($where);
 			}
 		}
+
+		
 	}
 
 ?>

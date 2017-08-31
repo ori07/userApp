@@ -146,6 +146,11 @@
 
 		 }
 
+		 function lastInserted(){
+		 	return $this->$link->insert_id;
+
+		 }
+
 	 }
 
 

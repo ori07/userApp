@@ -43,5 +43,9 @@
 		function deleteRole($where){
 			return $this->db->delete('role', $where);
 		}
+
+		function getLastInserted(){
+			return $this->db->lastInserted();
+		}
 	}
 ?>
