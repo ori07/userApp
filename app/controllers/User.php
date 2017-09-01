@@ -2,7 +2,7 @@
 /**
 * 
 */	
-	require "../rest/Rest.php";
+	require_once('../app/rest/Rest.php');
 
 	class User extends Controller{
 		
@@ -14,7 +14,7 @@
 		//Validate the user and password exist in db
 		public function userLogin(){
 			if (isset($_POST['user_name']) && isset($_POST['password'])){
-				$response = $this->model->userLogin("*", "user_name = "."'".$_POST['user_name']."'");
+				$response = $this->model->getUser("*", "user_name = "."'".$_POST['user_name']."'");
 				$response = $response[0];
 				$user_rol = null;
 				//The user is valid
@@ -27,8 +27,17 @@
 						foreach ($response_role as $value) {
 							array_push($user_rol, $value['role']);
 						}
+						if (in_array('ADMIN', $role)) { 
+							$_SERVER['PHP_AUTH_USER'] = $_POST['user_name'];
+           					$_SERVER['PHP_AUTH_PW'] = $_POST['password'];
+           					$_SERVER['AUTH_TYPE'] = "Basic Auth"; 
+						}
 					}else{
 						$user_rol = $response_role[0]['role'];
+						if ($user_rol == 'ADMIN') {
+							$_SERVER['PHP_AUTH_USER'] = $_POST['user_name'];
+           					$_SERVER['PHP_AUTH_PW'] = $_POST['password'];
+						}
 					}
 					$this->createSession($response['user_name'], $user_rol);
 					echo 1;
@@ -53,31 +62,36 @@
 		//Create User
 		function create(){
 			// Cross validation if the request method is POST else it will return "Not Acceptable" status
-			if($this->rest->get_request_method() != "POST"){
+			if($this->rest->getRequestMethod() != "POST"){
 				$this->rest->response('',406);
 			}
 			if (isset($_POST['user_name']) && isset($_POST['password'])){
 				$array['user_name'] = $_POST['user_name'];
 				$array['password'] = $_POST['password'];
 				$result = $this->model->registerUser($array);
+				var_dump($result);
 				if ($result) {
 					$response_array['status']='success';
 					$response_array['message']='register successfully.';
-					$response_array['data']=$this->model->getLastInserted();
-					$this->rest->response($this->rest->json($response_array), 200);
-					//TODO: render view
+					$lastId = $this->model->getLastInserted();
+					$user_data = $this->model->userLogin("*", "_id = "."'".$lastId."'");
+					$response_array['data']=$user_data;
+					//render view
+					$this->rest->response($response_array, 200);
+					
 				}else{
 					$response_array['status']='fail';
 					$response_array['message']='invalid username or password.';
 					$response_array['data']='';
-					$this->response($this->json($response_array),400);
-					//TODO render view
+					//render view
+					$this->response($response_array,400);
 				}
 			}else{
 				$response_array['status']='fail';
 				$response_array['message']='invalid username or password.';
 				$response_array['data']='';
-				$this->rest->response($this->rest->json($response_array),400);
+				//render view
+				$this->rest->response($response_array,400);
 			}
 
 		}
@@ -147,24 +161,92 @@
 
 		function users(){
 			// Cross validation if the request method is GET else it will return "Not Acceptable" status
-			if($this->rest->get_request_method() != "GET"){
+			if($this->rest->getRequestMethod() != "GET"){
 				$this->rest->response('',406);
 			}
 
+			//Validating if the user is login
+			$user_name = Session::getSession('user');
+
+			if ($user_name != "") {
+				$role = Session::getSession('role');
+				$length = count($role);
+				if ($length >1){
+					if (in_array('ADMIN', $role)) {
+						$this->renderAllUsers();
+						
+					}
+				}elseif ($role == "ADMIN") {
+					$this->renderAllUsers();
+				}
+					
+			}else{
+				//Redirect to the last location
+				$last_page = Session::getSession('lastPage');
+				header("Location:".URL.$last_page);
+			}
+
+		}
+
+		protected function renderAllUsers(){
 			$user_data = $this->model->getUsers();
 			if(count($user_data)>0) {
 				$response_array['status']='success';
 				$response_array['message']='Total '.count($user_data).' record(s) found.';
 				$response_array['total_record']= count($user_data);
 				$response_array['data']=$user_data;
-				$this->rest->response($this->json($response_array), 200);
-				//TODO: render view
+				$this->rest->response($response_array, 200);
 			} else {
 				$response_array['status']='fail';
 				$response_array['message']='Record not found.';
 				$response_array['data']='';
-				$this->rest->response($this->rest->json($response_array), 204);
-				//TODO: render view
+				$this->rest->response($response_array, 204);
+			}
+
+		}
+
+		function getUser($id){
+			// Cross validation if the request method is GET else it will return "Not Acceptable" status
+			if($this->rest->getRequestMethod() != "GET"){
+				$this->rest->response('',406);
+			}
+
+			//Validating if the user is login
+			$user_name = Session::getSession('user');
+
+			if ($user_name != "") {
+				$role = Session::getSession('role');
+				$length = count($role);
+				if ($length >1){
+					if (in_array('ADMIN', $role)) {
+						$this->renderUser($id);
+						
+					}
+				}elseif ($role == "ADMIN") {
+					$this->renderUser($id);
+				}
+					
+			}else{
+				//Redirect to the last location
+				$last_page = Session::getSession('lastPage');
+				header("Location:".URL.$last_page);
+			}
+
+		}
+
+		protected function renderUser($id){
+			$user_data = $this->model->getUser('*',"_id = "."'".$id."'");
+			if(count($user_data)>0) {
+				$response_array['status']='success';
+				$response_array['message']='Total '.count($user_data).' record(s) found.';
+				$response_array['total_record']= count($user_data);
+				$response_array['data']=$user_data;
+				$this->rest->response($response_array, 200);
+			} else {
+				$response_array['status']='fail';
+				$response_array['message']='Record not found.';
+				$response_array['data']='';
+				$this->rest->response($response_array, 204);
 			}
 
 		}

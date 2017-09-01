@@ -8,7 +8,7 @@
 			parent::__construct();
 		}
 
-		function userLogin($fields, $where){
+		function getUser($fields, $where){
 			return $this->db->selectConditional($fields, "user", $where);
 		}
 
