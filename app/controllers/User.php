@@ -65,11 +65,13 @@
 					$response_array['message']='register successfully.';
 					$response_array['data']=$this->model->getLastInserted();
 					$this->rest->response($this->rest->json($response_array), 200);
+					//TODO: render view
 				}else{
 					$response_array['status']='fail';
 					$response_array['message']='invalid username or password.';
 					$response_array['data']='';
 					$this->response($this->json($response_array),400);
+					//TODO render view
 				}
 			}else{
 				$response_array['status']='fail';
@@ -111,10 +113,28 @@
 
 		}
 
-		function deleteUser(){
+		function delete(){
+			// Cross validation if the request method is DELETE else it will return "Not Acceptable" status
+			if($this->rest->get_request_method() != "DELETE"){
+				$this->rest->response('',406);
+			}
 			if (isset($_POST['_id'])){
 				$where = "_id='".$_POST['_id']."'";
-				$this->model->deleteUser($where);
+				$result = $this->model->deleteUser($where);
+				if($result) {
+					$response_array['status']='success';
+					$response_array['message']='One record deleted.';
+					$response_array['data']=$delete;
+					$this->rest->response($this->rest->json($response_array), 200);
+				} else {
+					$response_array['status']='fail';
+					$response_array['message']='no record deleted';
+					$response_array['data']='';
+					$this->rest->response($this->rest->json($response_array), 200);
+				}
+
+			}else{
+				$this->rest->response('',204);	// If no records "No Content" status
 			}
 		}
 
@@ -125,7 +145,30 @@
 			}
 		}
 
-		
+		function users(){
+			// Cross validation if the request method is GET else it will return "Not Acceptable" status
+			if($this->rest->get_request_method() != "GET"){
+				$this->rest->response('',406);
+			}
+
+			$user_data = $this->model->getUsers();
+			if(count($user_data)>0) {
+				$response_array['status']='success';
+				$response_array['message']='Total '.count($user_data).' record(s) found.';
+				$response_array['total_record']= count($user_data);
+				$response_array['data']=$user_data;
+				$this->rest->response($this->json($response_array), 200);
+				//TODO: render view
+			} else {
+				$response_array['status']='fail';
+				$response_array['message']='Record not found.';
+				$response_array['data']='';
+				$this->rest->response($this->rest->json($response_array), 204);
+				//TODO: render view
+			}
+
+		}
+
 	}
 
 ?>
