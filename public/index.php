@@ -154,7 +154,7 @@ function processApi($controller_path, $control_name, $method_name, $method_url){
 				}
 
 			}else{
-				//Decoding por a json post
+				//Decoding a json post
 				if (!isset($_POST['user_name']) && !isset($_POST['password'])) {
 					$params = file_get_contents("php://input");
 					$params= json_decode($params, true);
@@ -166,18 +166,24 @@ function processApi($controller_path, $control_name, $method_name, $method_url){
 			}
 			break;
 		case 'PUT':
-			$request_parsed = array();
-			parse_str(file_get_contents("php://input"),$request_parsed);
-			print_r($request_parsed);
-			exit;
-			//print_r(json_decode(file_get_contents("php://in‌​put"), true));
-			$request_parsed = cleanInputs($request_parsed);
-			$controller->updateUser($request_parsed);
+			//Decoding a json post
+			if (!isset($_POST['user_name']) && !isset($_POST['password']) && !isset($_POST['_id'])) {
+				$params = file_get_contents("php://input");
+				$params= json_decode($params, true);
+				$_POST['_id']= $params['_id'];
+				$_POST['user_name']= $params['user_name'];
+				$_POST['password']= $params['password'];
+				$controller->updateUser();
+			}
 			break;
 		case 'DELETE':
-			$request_parsed = array();
-			$request_parsed = cleanInputs($_GET);
-			$controller->deleteUser($request_parsed);
+			//Decoding a json post
+			if (!isset($_POST['_id'])) {
+				$params = file_get_contents("php://input");
+				$params= json_decode($params, true);
+				$_POST['_id']= $params['_id'];
+				$controller->deleteUser();
+			}
 			break;
 		default:
 			# code...

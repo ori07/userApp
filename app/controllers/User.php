@@ -109,20 +109,17 @@
 
 		}
 
-		function updateUser($data){
+		function updateUser(){
 			// Cross validation if the request method is PUT else it will return "Not Acceptable" status
 			if($this->rest->getRequestMethod() != "PUT"){
 				$this->rest->response('',406);
 				exit;
 			}
-			//$body = file_get_contents('php://input');
-			//$decoded_data = json_decode($body);
-			if (true){
+			if (isset($_POST['user_name']) && isset($_POST['password']) && isset($_POST['_id'])){
 				$user_id = $_POST['_id'];
 				$array['user_name'] = $_POST['user_name'];
 				$array['password'] = $_POST['password'];
-				$this->model->setUser($array, "_id='".$user_id."'");
-
+				$result = $this->model->setUser($array, "_id='".$user_id."'");
 				if($result) {
 					$response_array['status']='success';
 					$response_array['message']='One record updated.';
@@ -133,8 +130,10 @@
 					$response_array['status']='fail';
 					$response_array['message']='no record updated';
 					$response_array['data']='';
-					$this->rest->response($response_array, 204);
+					$this->rest->response($response_array, 304);
 				}
+			}else{
+				$this->rest->response('No parameters given',204);	// If no records "No Content" status
 			}
 
 		}

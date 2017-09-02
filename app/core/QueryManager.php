@@ -119,8 +119,12 @@
 
 	 		//Creating the update statement
 	 		$stmt = "UPDATE ".$table." SET ".$values." WHERE ".$where.";";
-	 		$result = $this->link->query($stmt) or die($this->link->error); 
-	 		return true;
+	 		$result = $this->link->query($stmt) or die($this->link->error);
+	 		if ($this->link->affected_rows > 0) {
+	 		 	return true;
+	 		}else{
+	 			return false;
+	 		} 
 
 		 } 
 
