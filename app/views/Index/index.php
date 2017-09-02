@@ -27,7 +27,6 @@
                         url: url_user,
                         data: {user_name: user, password: pass},
                         success: function(response){
-                                alert(response);
                                  if (response == 1) {
                                    document.location = url_page;
                                  }else{

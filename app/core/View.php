@@ -9,7 +9,9 @@
 		}
 
 		function render($controller, $view){
-			$controller = get_class($controller);
+			if (is_object($controller)) {
+				$controller = get_class($controller);
+			}
 
 			require VIEWS.DFT."head.php";
 			require VIEWS.$controller.'/'.$view.'.php';

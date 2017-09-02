@@ -11,8 +11,6 @@
 	 	static function start(){
 	 		@session_start();
 	 		//unset($_SESSION);
-	 		$_SESSION['time'] = time();
-	 		$_SESSION['expire'] = $_SESSION['time'] + (5 * 60);
 	 	}
 
 	 	static function getSession($name){
@@ -24,6 +22,7 @@
 	 	}
 
 	 	static function destroy(){
+	 		@session_unset();
 	 		@session_destroy();
 	 	}
 	 } 

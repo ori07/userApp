@@ -20,10 +20,10 @@
 					
 				}else{
 						//Access denied
-						header("HTTP/1.1 401 Unauthorized");
 						$last_page = Session::getSession('lastPage');
-						header("Location:".URL.$last_page);
-						echo 'alert("You do not have permission to acces to this page. You have been redirected")';
+						$last_page = URL.$last_page;
+						header("refresh:2; url=".$last_page);
+						echo '<center>HTTP/1.1 401 Unauthorized<br><br><br>You do not have permission to acces to this page.You will be redirected</center>';
 				}
 			}else{
 				$login = substr(URL, 0, -1);

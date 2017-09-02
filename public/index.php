@@ -100,14 +100,14 @@ function createControllers($controller_path, $control_name, $method_name){
 			if (method_exists($controller, $method_name)) {
 				$controller->{$method_name}();
 			}else{
-				$url_temp = parseURL();
-				header("HTTP/1.1 404 Not Found");
-				$user_name = Session::getSession('user');
-				if ($user_name !== "") {
+				//Redirect to the last valid request			
+				if (isset($_SESSION['user'])){
 					$last_page = Session::getSession('lastPage');
-					header("Location:".URL.$last_page);
-					echo $url_temp;
+					$last_page = URL.$last_page;
+					header("refresh:2; url=".$last_page);
+					echo '<center>HTTP/1.1 404 Requested Page Not Found<br><br><br>.You will be redirected</center>';
 				}else{
+					//Redirect to login	
 					$login = substr(URL, 0, -1);
 					header("Location:".$login);
 				}
@@ -116,11 +116,15 @@ function createControllers($controller_path, $control_name, $method_name){
 		}
 
 	}else{
-		$user_name = Session::getSession('user');
-		if ($user_name == "") {
+		if (!isset($_SESSION['user'])){
 			$login = substr(URL, 0, -1);
 			header("Location:".$login);
-			echo 'alert("You must login, please")';
+			echo "You must login, please";
+		}else{
+			$last_page = Session::getSession('lastPage');
+			$last_page = URL.$last_page;
+			header("refresh:2; url=".$last_page);
+			echo '<center>HTTP/1.1 404 Requested Page Not Found<br><br><br>.You will be redirected</center>';
 		}
 	}
 
@@ -186,7 +190,16 @@ function processApi($controller_path, $control_name, $method_name, $method_url){
 			}
 			break;
 		default:
-			# code...
+			$user_name = Session::getSession('user');
+			if ($user_name !== "") {
+				$last_page = Session::getSession('lastPage');
+				$last_page = URL.$last_page;
+				header("refresh:2; url=".$last_page);
+				echo '<center>HTTP/1.1 404 Requested Page Not Found<br><br><br>.You will be redirected</center>';
+			}else{
+				$login = substr(URL, 0, -1);
+				header("Location:".$login);
+			}
 			break;
 	}
 	
@@ -197,41 +210,4 @@ function processApi($controller_path, $control_name, $method_name, $method_url){
 
 }
 
-function cleanInputs($data){
-	$clean_input = array();
-	if(is_array($data)){
-		foreach($data as $k => $v){
-			$clean_input[$k] = $this->cleanInputs($v);
-		}
-	}else{
-		if(get_magic_quotes_gpc()){
-			$data = trim(stripslashes($data));
-		}
-		$data = strip_tags($data);
-		$clean_input = trim($data);
-	}
-	return $clean_input;
-}	
-
-
-
-
-
-//print($controller_path)
-//$app = new App;
-
-//require __DIR__ . '/../src/Bootstrap.php';
-/*  require_once('connection.php');
-
-
-  if (isset($_GET['controller']) && isset($_GET['action'])) {
-    $controller = $_GET['controller'];
-    $action     = $_GET['action'];
-  } else {
-    $controller = 'pages';
-    $action     = 'login';
-  }
-
-  require_once('views/layout.php');
-*/
 ?>

@@ -13,21 +13,15 @@
   <body>
   <?php 
   	error_reporting(E_ALL ^ E_NOTICE);
-  	Session::start();
-  	$login = substr(URL, 0, -1);
-  	$user_name = Session::getSession('user');
-  	if ($user_name =="") {
-  		if ($_SERVER['REQUEST_URI'] != '/userApp/public') {
-  			echo "Please Login again";
-  			echo "<a href=".$login.">Click Here to Login</a>";
-  		}
-  		
+  	if (!isset($_SESSION['user'])){
+
   	}else{
+      $user_name = $_SESSION['user'];
   		$now = time(); // Checking the time now when home page starts.
   		$expire = Session::getSession('expire');
   		if ($now > $expire) {
-  			session_destroy();
-  			echo "Your session has expired! <a href=".$login."'>Login here</a>";
+  			Session::destroy();
+  			echo "Your session has expired! <a href=".$login.">Login here</a>";
   		}else{
   			?>
   			<nav>
