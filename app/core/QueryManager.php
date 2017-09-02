@@ -134,6 +134,7 @@
 	 		return true;
 		 }
 
+
 		 function clearDataBase(){
 		 	$stmt = "SET FOREIGN_KEY_CHECKS = 0;";
 		 	$this->link->query($stmt) or die($this->link->error);
@@ -147,7 +148,8 @@
 		 }
 
 		 function lastInserted(){
-		 	return $this->$link->insert_id;
+		 	$id = $this->link->insert_id;
+		 	return $id;
 		 }
 
 	 }

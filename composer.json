@@ -11,13 +11,8 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",
-        "filp/whoops": "~2.1",
-        "nikic/fast-route": "^1.2"
+        "php": ">=7.0.0"
     },
     "autoload": {
-        "psr-4": {
-            "userApp\\": "src/"
-        }
     }
 }

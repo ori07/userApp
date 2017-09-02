@@ -132,8 +132,13 @@ function processApi($controller_path, $control_name, $method_name, $method_url){
 	switch ($method_url) {
 		case 'GET':
 				if ($method_name != "") {
-					$id = (int)$method_name;
-					$controller->getUser($id);
+					if (method_exists($controller, $method_name)) {
+						$controller->{$method_name}();
+					}else{
+						$id = (int)$method_name;
+						$controller->getUser($id);
+					}
+					
 				}else{
 					$controller->users($method_name);
 				}
@@ -145,10 +150,34 @@ function processApi($controller_path, $control_name, $method_name, $method_url){
 				if (method_exists($controller, $method_name)) {
 					$controller->{$method_name}();
 				}else{
-					//Create User
-					$controller->create();
+					//TODO: What happend call a method doesn't exist
 				}
+
+			}else{
+				//Decoding por a json post
+				if (!isset($_POST['user_name']) && !isset($_POST['password'])) {
+					$params = file_get_contents("php://input");
+					$params= json_decode($params, true);
+					$_POST['user_name']= $params['user_name'];
+					$_POST['password']= $params['password'];
+				}
+				//Create User; 
+				$controller->create();
 			}
+			break;
+		case 'PUT':
+			$request_parsed = array();
+			parse_str(file_get_contents("php://input"),$request_parsed);
+			print_r($request_parsed);
+			exit;
+			//print_r(json_decode(file_get_contents("php://in‌​put"), true));
+			$request_parsed = cleanInputs($request_parsed);
+			$controller->updateUser($request_parsed);
+			break;
+		case 'DELETE':
+			$request_parsed = array();
+			$request_parsed = cleanInputs($_GET);
+			$controller->deleteUser($request_parsed);
 			break;
 		default:
 			# code...
@@ -161,6 +190,22 @@ function processApi($controller_path, $control_name, $method_name, $method_url){
 	
 
 }
+
+function cleanInputs($data){
+	$clean_input = array();
+	if(is_array($data)){
+		foreach($data as $k => $v){
+			$clean_input[$k] = $this->cleanInputs($v);
+		}
+	}else{
+		if(get_magic_quotes_gpc()){
+			$data = trim(stripslashes($data));
+		}
+		$data = strip_tags($data);
+		$clean_input = trim($data);
+	}
+	return $clean_input;
+}	
 
 
 

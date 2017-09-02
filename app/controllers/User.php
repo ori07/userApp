@@ -27,7 +27,7 @@
 						foreach ($response_role as $value) {
 							array_push($user_rol, $value['role']);
 						}
-						if (in_array('ADMIN', $role)) { 
+						if (in_array('ADMIN', $user_rol)) { 
 							$_SERVER['PHP_AUTH_USER'] = $_POST['user_name'];
            					$_SERVER['PHP_AUTH_PW'] = $_POST['password'];
            					$_SERVER['AUTH_TYPE'] = "Basic Auth"; 
@@ -54,6 +54,9 @@
 
 		//Destroy the current session and get back to login page
 		function destroySession(){
+			unset($_SERVER['PHP_AUTH_USER']);
+           	unset($_SERVER['PHP_AUTH_PW']);
+           	unset($_SERVER['AUTH_TYPE']); 
 			Session::destroy();
 			$login = substr(URL, 0, -1);
 			header("Location:".$login);
@@ -69,15 +72,14 @@
 				$array['user_name'] = $_POST['user_name'];
 				$array['password'] = $_POST['password'];
 				$result = $this->model->registerUser($array);
-				var_dump($result);
 				if ($result) {
 					$response_array['status']='success';
 					$response_array['message']='register successfully.';
 					$lastId = $this->model->getLastInserted();
-					$user_data = $this->model->userLogin("*", "_id = "."'".$lastId."'");
+					$user_data = $this->model->getUser("*", "_id = "."'".$lastId."'");
 					$response_array['data']=$user_data;
 					//render view
-					$this->rest->response($response_array, 200);
+					$this->rest->response($response_array, 201);
 					
 				}else{
 					$response_array['status']='fail';
@@ -91,7 +93,7 @@
 				$response_array['message']='invalid username or password.';
 				$response_array['data']='';
 				//render view
-				$this->rest->response($response_array,400);
+				$this->rest->response($response_array,204);
 			}
 
 		}
@@ -107,12 +109,32 @@
 
 		}
 
-		function updateUser(){
-			if (isset($_POST['user_name']) && isset($_POST['password']) && isset($_POST['_id'])){
+		function updateUser($data){
+			// Cross validation if the request method is PUT else it will return "Not Acceptable" status
+			if($this->rest->getRequestMethod() != "PUT"){
+				$this->rest->response('',406);
+				exit;
+			}
+			//$body = file_get_contents('php://input');
+			//$decoded_data = json_decode($body);
+			if (true){
 				$user_id = $_POST['_id'];
 				$array['user_name'] = $_POST['user_name'];
 				$array['password'] = $_POST['password'];
 				$this->model->setUser($array, "_id='".$user_id."'");
+
+				if($result) {
+					$response_array['status']='success';
+					$response_array['message']='One record updated.';
+					$update = $this->model->getUser('*',"_id = "."'".$user_id."'");
+					$response_array['data']=$update;
+					$this->rest->response($response_array, 200);
+				} else {
+					$response_array['status']='fail';
+					$response_array['message']='no record updated';
+					$response_array['data']='';
+					$this->rest->response($response_array, 204);
+				}
 			}
 
 		}
@@ -127,28 +149,29 @@
 
 		}
 
-		function delete(){
+		function deleteUser(){
 			// Cross validation if the request method is DELETE else it will return "Not Acceptable" status
-			if($this->rest->get_request_method() != "DELETE"){
+			if($this->rest->getRequestMethod() != "DELETE"){
 				$this->rest->response('',406);
 			}
 			if (isset($_POST['_id'])){
 				$where = "_id='".$_POST['_id']."'";
+				$delete = $this->model->getUser('*',"_id = "."'".$id."'");
 				$result = $this->model->deleteUser($where);
 				if($result) {
 					$response_array['status']='success';
 					$response_array['message']='One record deleted.';
 					$response_array['data']=$delete;
-					$this->rest->response($this->rest->json($response_array), 200);
+					$this->rest->response($response_array, 200);
 				} else {
 					$response_array['status']='fail';
 					$response_array['message']='no record deleted';
 					$response_array['data']='';
-					$this->rest->response($this->rest->json($response_array), 200);
+					$this->rest->response($response_array, 200);
 				}
 
 			}else{
-				$this->rest->response('',204);	// If no records "No Content" status
+				$this->rest->response('No parameters given',204);	// If no records "No Content" status
 			}
 		}
 
