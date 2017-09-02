@@ -20,15 +20,18 @@ function parseURL(){
 		//Means array like: [controller, method]
 		if ($pos === false) {
 			$controller = $url_init[1];
-			//Verify if url has params attached 
-			$pos_param = verifyParams($url_init[2]);
-			if ($pos_param === false) {
-				//Methods without params
-				$method = $url_init[2];
-			}else{
-				//Array like [Controller, method?param=value]
-				$method = substr($url_init[2], $pos_param);
-			}
+			//Verify if url has params attached
+			if (count($url_init)>2) {
+			 	$pos_param = verifyParams($url_init[2]);
+				if ($pos_param === false) {
+					//Methods without params
+					$method = $url_init[2];
+				}else{
+					//Array like [Controller, method?param=value]
+					$method = substr($url_init[2], $pos_param);
+				}
+			 } 
+			
 		}else{
 			//Means array like: [some/other/public/controller, method] or [some/other/public]
 			if (count($url_init)==3) {
