@@ -155,7 +155,7 @@
 			}
 			if (isset($_POST['_id'])){
 				$where = "_id='".$_POST['_id']."'";
-				$delete = $this->model->getUser('*',"_id = "."'".$id."'");
+				$delete = $this->model->getUser('*',$where);
 				$result = $this->model->deleteUser($where);
 				if($result) {
 					$response_array['status']='success';
@@ -164,9 +164,10 @@
 					$this->rest->response($response_array, 200);
 				} else {
 					$response_array['status']='fail';
-					$response_array['message']='no record deleted';
-					$response_array['data']='';
-					$this->rest->response($response_array, 200);
+					$response_array['message']='The record does not exist';
+					$data['user_id'] = $_POST['_id'];
+					$response_array['data']=$data;
+					$this->rest->response($response_array, 404);
 				}
 
 			}else{

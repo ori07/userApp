@@ -135,7 +135,11 @@
 		 	//Creating the delete statement
 	 		$stmt = "DELETE FROM ".$table." WHERE ".$where.";";
 	 		$result = $this->link->query($stmt) or die($this->link->error); 
-	 		return true;
+	 		if ($this->link->affected_rows > 0) {
+	 		 	return true;
+	 		}else{
+	 			return false;
+	 		} 
 		 }
 
 
